@@ -4,202 +4,236 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Retina Plan Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #ffffff;
-      --bg-secondary: #f7f7f5;
-      --bg-tertiary: #f0efe9;
-      --bg-info: #e6f1fb;
-      --bg-success: #eaf3de;
-      --bg-danger: #fcebeb;
-      --text: #1a1a18;
-      --text-secondary: #5f5e5a;
-      --text-tertiary: #888780;
-      --text-info: #185fa5;
-      --text-success: #3b6d11;
-      --text-danger: #a32d2d;
-      --border: rgba(0,0,0,0.12);
-      --border-md: rgba(0,0,0,0.22);
-      --border-info: rgba(24,95,165,0.35);
-      --border-success: rgba(59,109,17,0.35);
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --font: -apple-system, 'Helvetica Neue', Arial, sans-serif;
-      --font-mono: 'Menlo', 'Monaco', 'Courier New', monospace;
+      --amber: #EF9F27;
+      --amber-dark: #BA7517;
+      --amber-dim: rgba(239,159,39,0.15);
+      --amber-border: rgba(239,159,39,0.35);
+      --surface: rgba(8, 6, 4, 0.82);
+      --surface-raised: rgba(14, 10, 4, 0.88);
+      --surface-input: rgba(255,255,255,0.06);
+      --surface-input-focus: rgba(255,255,255,0.09);
+      --text: #f5f0e8;
+      --text-muted: rgba(245,240,232,0.55);
+      --text-dim: rgba(245,240,232,0.3);
+      --border: rgba(255,255,255,0.1);
+      --border-amber: rgba(239,159,39,0.4);
+      --success-bg: rgba(29,158,117,0.12);
+      --success-border: rgba(29,158,117,0.3);
+      --success-text: #5DCAA5;
+      --radius: 10px;
+      --radius-lg: 16px;
+      --font: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1c1c1a;
-        --bg-secondary: #252523;
-        --bg-tertiary: #2c2c2a;
-        --bg-info: #0c2a44;
-        --bg-success: #172e08;
-        --bg-danger: #2e1010;
-        --text: #f0efe9;
-        --text-secondary: #b4b2a9;
-        --text-tertiary: #888780;
-        --text-info: #85b7eb;
-        --text-success: #97c459;
-        --text-danger: #f09595;
-        --border: rgba(255,255,255,0.1);
-        --border-md: rgba(255,255,255,0.2);
-        --border-info: rgba(133,183,235,0.3);
-        --border-success: rgba(151,196,89,0.3);
-      }
-    }
-
-    body {
-      font-family: var(--font);
-      background: var(--bg-tertiary);
-      color: var(--text);
+    html, body {
       min-height: 100vh;
-      padding: 2rem 1rem;
+      font-family: var(--font);
+      color: var(--text);
+      background: #080604;
+    }
+
+    body { position: relative; overflow-x: hidden; }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Fluorescein_angiography_cross.jpg/1280px-Fluorescein_angiography_cross.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: brightness(0.28) saturate(1.4);
+    }
+
+    .bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(4,3,1,0.7) 100%);
     }
 
     .page {
-      max-width: 760px;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 2.5rem 2rem 3rem;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
     header {
-      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+      padding-bottom: 1.25rem;
     }
 
-    header h1 {
-      font-size: 20px;
-      font-weight: 500;
+    .logo-eye { width: 28px; height: 28px; flex-shrink: 0; }
+
+    header h1 { font-size: 17px; font-weight: 500; letter-spacing: 0.01em; color: var(--text); }
+
+    header p { font-size: 13px; color: var(--text-muted); margin-left: auto; font-weight: 300; }
+
+    .api-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .api-bar label { font-size: 12px; color: var(--text-muted); white-space: nowrap; font-weight: 300; }
+
+    .api-bar input {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 300;
+      padding: 6px 10px;
+      border: 0.5px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface-input);
       color: var(--text);
-      letter-spacing: -0.01em;
     }
 
-    header p {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-top: 4px;
+    .api-bar input:focus { outline: none; border-color: var(--border-amber); }
+
+    .api-status { font-size: 11px; white-space: nowrap; }
+    .api-status.ok { color: var(--success-text); }
+    .api-status.err { color: #F09595; }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      flex: 1;
     }
 
-    .card {
-      background: var(--bg);
+    .panel {
+      background: var(--surface);
       border: 0.5px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
-    .section-label {
-      font-size: 11px;
+    .panel-label {
+      font-size: 10px;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-tertiary);
-      margin-bottom: 8px;
+      letter-spacing: 0.1em;
+      color: var(--amber);
+      margin-bottom: 12px;
     }
 
     textarea {
+      flex: 1;
       width: 100%;
+      min-height: 420px;
       font-family: var(--font-mono);
       font-size: 13px;
-      line-height: 1.65;
-      padding: 12px;
-      border: 0.5px solid var(--border-md);
-      border-radius: var(--radius-md);
-      background: var(--bg-secondary);
+      font-weight: 300;
+      line-height: 1.75;
+      padding: 14px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-input);
       color: var(--text);
-      resize: vertical;
-      min-height: 220px;
+      resize: none;
+      transition: border-color 0.2s, background 0.2s;
     }
 
-    textarea:focus {
-      outline: none;
-      border-color: var(--text-info);
-    }
-
-    textarea::placeholder {
-      color: var(--text-tertiary);
-    }
+    textarea:focus { outline: none; border-color: var(--border-amber); background: var(--surface-input-focus); }
+    textarea::placeholder { color: var(--text-dim); font-weight: 300; }
 
     .controls {
       display: flex;
       gap: 8px;
-      margin-top: 10px;
+      margin-top: 14px;
+      align-items: center;
       flex-wrap: wrap;
     }
 
     button {
-      padding: 8px 16px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border-md);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 13px;
       font-family: var(--font);
+      font-size: 13px;
+      font-weight: 400;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      background: var(--surface-input);
+      color: var(--text);
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.15s, border-color 0.15s;
       white-space: nowrap;
     }
 
-    button:hover { background: var(--bg-secondary); }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button:hover { background: var(--surface-input-focus); border-color: rgba(255,255,255,0.2); }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
 
     .btn-primary {
-      background: var(--bg-info);
-      color: var(--text-info);
-      border-color: var(--border-info);
+      background: var(--amber-dim);
+      color: var(--amber);
+      border-color: var(--amber-border);
       font-weight: 500;
     }
 
-    .btn-primary:hover { opacity: 0.85; background: var(--bg-info); }
+    .btn-primary:hover { background: rgba(239,159,39,0.22); }
 
-    .btn-danger {
-      background: var(--bg-danger);
-      color: var(--text-danger);
-      border-color: rgba(163,45,45,0.3);
-    }
-
-    .mic-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .mic-btn { display: flex; align-items: center; gap: 7px; }
 
     .mic-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px; height: 7px;
       border-radius: 50%;
       background: currentColor;
       flex-shrink: 0;
     }
 
     .mic-btn.recording {
-      background: var(--bg-danger);
-      color: var(--text-danger);
-      border-color: rgba(163,45,45,0.3);
+      background: rgba(226,75,74,0.15);
+      color: #F09595;
+      border-color: rgba(226,75,74,0.35);
     }
 
-    .mic-btn.recording .mic-dot {
-      animation: pulse 1s infinite;
-    }
+    .mic-btn.recording .mic-dot { animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .rec-timer { font-family: var(--font-mono); font-size: 12px; color: #F09595; display: none; }
+    .rec-timer.visible { display: inline; }
 
     .status {
-      font-size: 13px;
-      color: var(--text-secondary);
+      font-size: 12px;
+      color: var(--text-muted);
       margin-top: 10px;
-      min-height: 20px;
+      min-height: 18px;
       display: flex;
       align-items: center;
       gap: 6px;
+      font-weight: 300;
     }
 
     .spinner {
-      width: 13px;
-      height: 13px;
-      border: 2px solid var(--border-md);
-      border-top-color: var(--text-info);
+      width: 12px; height: 12px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-top-color: var(--amber);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       flex-shrink: 0;
@@ -207,97 +241,172 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .output-card {
-      display: none;
+    .output-panel { display: flex; flex-direction: column; }
+
+    .output-scroll {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 420px;
+      max-height: 70vh;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
     }
 
-    .output-text {
+    .output-scroll::-webkit-scrollbar { width: 4px; }
+    .output-scroll::-webkit-scrollbar-track { background: transparent; }
+    .output-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .output-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 380px;
+      gap: 10px;
+    }
+
+    .output-empty-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .output-empty p { font-size: 13px; color: var(--text-dim); font-weight: 300; text-align: center; }
+
+    .plan-text {
       font-family: var(--font-mono);
       font-size: 13px;
-      line-height: 1.7;
+      font-weight: 300;
+      line-height: 1.8;
       color: var(--text);
       white-space: pre-wrap;
       word-break: break-word;
-      background: var(--bg-secondary);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px;
+      padding: 4px 2px;
     }
 
-    .divider {
-      border: none;
-      border-top: 0.5px solid var(--border);
-      margin: 16px 0;
-    }
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 16px 0; }
 
-    .copy-row {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 10px;
+    .billing-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--success-text);
+      margin-bottom: 10px;
     }
 
     .billing-text {
       font-family: var(--font-mono);
-      font-size: 13px;
-      line-height: 1.7;
+      font-size: 12.5px;
+      font-weight: 300;
+      line-height: 1.8;
       color: var(--text);
       white-space: pre-wrap;
       word-break: break-word;
-      background: var(--bg-success);
-      border: 0.5px solid var(--border-success);
-      border-radius: var(--radius-md);
-      padding: 12px;
+      background: var(--success-bg);
+      border: 0.5px solid var(--success-border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+
+    .output-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+      gap: 8px;
     }
 
     .toast {
       position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--text);
-      color: var(--bg);
+      bottom: 2rem; right: 2rem;
+      background: var(--surface-raised);
+      border: 0.5px solid var(--border-amber);
+      color: var(--amber);
       font-size: 13px;
-      padding: 10px 16px;
-      border-radius: var(--radius-md);
+      font-family: var(--font);
+      padding: 10px 18px;
+      border-radius: var(--radius);
       opacity: 0;
-      transition: opacity 0.2s;
+      transform: translateY(6px);
+      transition: opacity 0.2s, transform 0.2s;
       pointer-events: none;
+      z-index: 100;
+      backdrop-filter: blur(12px);
     }
 
-    .toast.show { opacity: 1; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 700px) {
+      .main-grid { grid-template-columns: 1fr; }
+      header p { display: none; }
+    }
   </style>
 </head>
 <body>
+  <div class="bg"></div>
+
   <div class="page">
     <header>
+      <svg class="logo-eye" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="14" cy="14" rx="13" ry="13" stroke="rgba(239,159,39,0.5)" stroke-width="0.75"/>
+        <path d="M4 14 C7 8, 21 8, 24 14 C21 20, 7 20, 4 14Z" stroke="#EF9F27" stroke-width="0.75" fill="rgba(239,159,39,0.08)"/>
+        <circle cx="14" cy="14" r="4" stroke="#EF9F27" stroke-width="0.75" fill="rgba(239,159,39,0.15)"/>
+        <circle cx="14" cy="14" r="1.5" fill="#EF9F27" opacity="0.8"/>
+      </svg>
       <h1>Retina Plan Generator</h1>
-      <p>Type or dictate your assessment — get a formatted plan and CPT billing summary</p>
+      <p>williamfoulsham.com</p>
     </header>
 
-    <div class="card">
-      <div class="section-label">Assessment</div>
-      <textarea id="assessment" placeholder="# AMD&#10;OD wet AMD with active CNV&#10;OS intermediate nonexudative AMD&#10;&#10;# T2DM&#10;- diagnosed 2005&#10;- last A1c 7.3&#10;OD mild NPDR no DME&#10;OS mild NPDR no DME&#10;&#10;# PVD OU&#10;- no breaks on SDE"></textarea>
-      <div class="controls">
-        <button class="mic-btn" id="micBtn" onclick="toggleRecording()">
-          <span class="mic-dot"></span>
-          <span id="micLabel">Record dictation</span>
-        </button>
-        <button class="btn-primary" id="generateBtn" onclick="generate()">Generate plan ↗</button>
-        <button onclick="clearAll()">Clear</button>
-      </div>
-      <div class="status" id="status"></div>
+    <div class="api-bar">
+      <label>Anthropic API key</label>
+      <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off" />
+      <span class="api-status" id="apiStatus"></span>
+      <button onclick="saveKey()" style="padding: 6px 12px; font-size: 12px;">Save</button>
     </div>
 
-    <div class="card output-card" id="outputCard">
-      <div class="section-label">Generated plan</div>
-      <div class="output-text" id="outputText"></div>
+    <div class="main-grid">
+      <div class="panel">
+        <div class="panel-label">Assessment</div>
+        <textarea id="assessment" placeholder="# AMD&#10;OD wet AMD with active CNV&#10;OS intermediate nonexudative AMD&#10;&#10;# T2DM&#10;- diagnosed 2005, last A1c 7.3&#10;OD mild NPDR no DME&#10;OS mild NPDR no DME&#10;&#10;# PVD OU&#10;- no breaks on SDE"></textarea>
+        <div class="controls">
+          <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+            <span class="mic-dot"></span>
+            <span id="micLabel">Record</span>
+            <span class="rec-timer" id="timer">0:00</span>
+          </button>
+          <button class="btn-primary" id="generateBtn" onclick="generate()">Generate plan ↗</button>
+          <button onclick="clearAll()">Clear</button>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
 
-      <hr class="divider" />
-
-      <div class="section-label">CPT &amp; billing</div>
-      <div class="billing-text" id="cptText"></div>
-
-      <div class="copy-row">
-        <button onclick="copyAll()">Copy plan + billing</button>
+      <div class="panel output-panel">
+        <div class="panel-label">Generated plan</div>
+        <div class="output-scroll">
+          <div class="output-empty" id="outputEmpty">
+            <div class="output-empty-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M2 9 C4.5 4, 13.5 4, 16 9 C13.5 14, 4.5 14, 2 9Z" stroke="rgba(245,240,232,0.25)" stroke-width="0.75"/>
+                <circle cx="9" cy="9" r="2.5" stroke="rgba(245,240,232,0.25)" stroke-width="0.75"/>
+              </svg>
+            </div>
+            <p>Your generated plan will appear here</p>
+          </div>
+          <div id="planOut" style="display:none;">
+            <div class="plan-text" id="planText"></div>
+            <hr class="divider">
+            <div class="billing-label">CPT &amp; billing</div>
+            <div class="billing-text" id="billingText"></div>
+          </div>
+        </div>
+        <div class="output-actions" id="outputActions" style="display:none;">
+          <button onclick="copyPlan()">Copy plan</button>
+          <button onclick="copyAll()">Copy all</button>
+        </div>
       </div>
     </div>
   </div>
@@ -305,47 +414,68 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    let mediaRecorder = null;
-    let audioChunks = [];
-    let isRecording = false;
-
-    const SYSTEM_PROMPT = `You are an expert retina specialist clinical documentation assistant. Your job is to generate a clinical plan section and CPT billing summary from a retina specialist's assessment notes.
+    const SYSTEM_PROMPT = `You are an expert retina specialist clinical documentation assistant. Generate a clinical plan section and CPT billing summary from the retina specialist's assessment notes.
 
 PLAN FORMAT RULES — follow exactly:
-- Mirror the assessment diagnoses as headers using #
-- Under each diagnosis, add standard retina counseling and management bullets using the exact style shown
-- At the end, produce a "Plan:" section with action items as bullets, then "Return [timeframe], sooner PRN" on its own line
-- Use these exact standard phrases when applicable (do not deviate):
+- Mirror assessment diagnoses as # headers
+- Add standard counseling/management bullets under each diagnosis
+- End with a "Plan:" section with bullet action items, then "Return [timeframe], sooner PRN"
+- Use these exact standard phrases when applicable:
   * AMD: "counselled on Amsler monitoring, importance of healthy diet with green vegetables, no smoking"
   * CNV precautions: "CNV precautions reviewed"
-  * Anti-VEGF injection: "Avastin OD today" or "Avastin OS today" or "Avastin OU today" as appropriate
+  * Anti-VEGF: "Avastin OD today" / "Avastin OS today" / "Avastin OU today" as appropriate (default to Avastin unless specified)
   * Injection consent: "RBA reviewed including risk of endophthalmitis, VH, RD"
   * "Worsening precautions reviewed"
   * Diabetes: "counselled on importance of tight BP/BG control" and "BP/BG control with PCP"
-  * PVD: "no breaks on SDE" if noted
-  * NPDR without DME: note laterality and severity, no injection needed unless otherwise stated
-- For anti-VEGF, default to Avastin unless another agent is specified
-- Keep the tone and abbreviations consistent with the example (OU, OD, OS, NPDR, DME, CNV, AMD, SDE, RBA, VH, RD, PRN, PCP)
-- Do not add findings not present in the assessment
-- Return interval should be clinically appropriate (e.g., 5 weeks for active CNV, 3-4 months for stable findings)
+  * PVD with no breaks: "no breaks on SDE"
+- Keep abbreviations: OU, OD, OS, NPDR, DME, CNV, AMD, SDE, RBA, VH, RD, PRN, PCP
+- Do not add findings not present in assessment
+- Clinically appropriate return interval (5 weeks active CNV; 3-4 months stable)
 
-CPT BILLING RULES:
-After the plan, output a section starting with "---BILLING---" on its own line, then:
-- List all applicable CPT codes with descriptions
-- State the E/M level (99204 or 99205 for new patients) and justify it briefly based on medical decision making (MDM) complexity
-- Note any procedure codes (e.g., 67028 for intravitreal injection, 92250 for fundus photography, 92134 for OCT)
-- Flag if documentation supports the billed level or if any element is missing
-- Use this exact format:
-  CPT codes:
-  [code] — [description]
+CPT BILLING:
+After the plan output "---BILLING---" on its own line, then:
+CPT codes:
+[code] — [description]
 
-  E/M level: [code] — [justification 1-2 sentences]
-  
-  Billing note: [any caveats or missing documentation flags]
+E/M level: [code] — [1-2 sentence MDM justification]
 
-Output ONLY the plan text and billing section. No preamble, no explanation.`;
+Billing note: [caveats or missing documentation flags]
 
-    async function toggleRecording() {
+Output ONLY the plan and billing. No preamble.`;
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let timerInterval = null;
+    let seconds = 0;
+
+    window.addEventListener('load', () => {
+      const saved = localStorage.getItem('retina_api_key');
+      if (saved) {
+        document.getElementById('apiKey').value = saved;
+        setApiStatus(true);
+      }
+    });
+
+    function saveKey() {
+      const key = document.getElementById('apiKey').value.trim();
+      if (!key.startsWith('sk-ant-')) { setApiStatus(false, 'Invalid key format'); return; }
+      localStorage.setItem('retina_api_key', key);
+      setApiStatus(true);
+      showToast('API key saved');
+    }
+
+    function setApiStatus(ok, msg) {
+      const el = document.getElementById('apiStatus');
+      if (ok) { el.textContent = 'Key saved'; el.className = 'api-status ok'; }
+      else { el.textContent = msg || 'No key'; el.className = 'api-status err'; }
+    }
+
+    function getKey() {
+      return localStorage.getItem('retina_api_key') || document.getElementById('apiKey').value.trim();
+    }
+
+    async function toggleMic() {
       if (!isRecording) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -358,46 +488,55 @@ Output ONLY the plan text and billing section. No preamble, no explanation.`;
             const blob = new Blob(audioChunks, { type: 'audio/webm' });
             const reader = new FileReader();
             reader.onload = async () => {
-              const base64 = reader.result.split(',')[1];
+              const b64 = reader.result.split(',')[1];
+              const key = getKey();
+              if (!key) { setStatus(false, 'Add your API key above first.'); return; }
               try {
                 const res = await fetch('https://api.anthropic.com/v1/messages', {
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': key,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                  },
                   body: JSON.stringify({
                     model: 'claude-sonnet-4-20250514',
-                    max_tokens: 1000,
-                    messages: [{
-                      role: 'user',
-                      content: [
-                        { type: 'text', text: 'Transcribe this retina specialist clinical dictation exactly as spoken. Return only the transcription, no preamble.' },
-                        { type: 'image', source: { type: 'base64', media_type: 'audio/webm', data: base64 } }
-                      ]
-                    }]
+                    max_tokens: 500,
+                    messages: [{ role: 'user', content: [
+                      { type: 'text', text: 'Transcribe this retina specialist clinical dictation verbatim. Return only the transcription.' },
+                      { type: 'image', source: { type: 'base64', media_type: 'audio/webm', data: b64 } }
+                    ]}]
                   })
                 });
                 const data = await res.json();
-                const transcript = data.content?.map(b => b.text || '').join('') || '';
-                const current = document.getElementById('assessment').value;
-                document.getElementById('assessment').value = current ? current + '\n' + transcript : transcript;
+                const t = (data.content||[]).map(x=>x.text||'').join('');
+                const cur = document.getElementById('assessment').value;
+                document.getElementById('assessment').value = cur ? cur + '\n' + t : t;
                 setStatus(false, 'Transcription added.');
-              } catch(e) {
-                setStatus(false, 'Transcription failed. Please type your dictation.');
-              }
+              } catch(e) { setStatus(false, 'Transcription failed — please type your assessment.'); }
             };
             reader.readAsDataURL(blob);
           };
           mediaRecorder.start();
           isRecording = true;
+          seconds = 0;
           document.getElementById('micBtn').classList.add('recording');
-          document.getElementById('micLabel').textContent = 'Stop recording';
-        } catch(e) {
-          setStatus(false, 'Microphone access denied. Please type your assessment.');
-        }
+          document.getElementById('micLabel').textContent = 'Stop';
+          document.getElementById('timer').classList.add('visible');
+          timerInterval = setInterval(() => {
+            seconds++;
+            const m = Math.floor(seconds/60), s = seconds%60;
+            document.getElementById('timer').textContent = m+':'+(s<10?'0':'')+s;
+          }, 1000);
+        } catch(e) { setStatus(false, 'Microphone access denied.'); }
       } else {
+        clearInterval(timerInterval);
         mediaRecorder.stop();
         isRecording = false;
         document.getElementById('micBtn').classList.remove('recording');
-        document.getElementById('micLabel').textContent = 'Record dictation';
+        document.getElementById('micLabel').textContent = 'Record';
+        document.getElementById('timer').classList.remove('visible');
         setStatus(false, '');
       }
     }
@@ -405,16 +544,25 @@ Output ONLY the plan text and billing section. No preamble, no explanation.`;
     async function generate() {
       const assessment = document.getElementById('assessment').value.trim();
       if (!assessment) { setStatus(false, 'Please enter an assessment first.'); return; }
+      const key = getKey();
+      if (!key) { setStatus(false, 'Please enter your Anthropic API key above.'); return; }
 
       const btn = document.getElementById('generateBtn');
       btn.disabled = true;
       setStatus(true, 'Generating plan...');
-      document.getElementById('outputCard').style.display = 'none';
+      document.getElementById('outputEmpty').style.display = 'none';
+      document.getElementById('planOut').style.display = 'none';
+      document.getElementById('outputActions').style.display = 'none';
 
       try {
         const res = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
           body: JSON.stringify({
             model: 'claude-sonnet-4-20250514',
             max_tokens: 1000,
@@ -423,41 +571,41 @@ Output ONLY the plan text and billing section. No preamble, no explanation.`;
           })
         });
         const data = await res.json();
-        const full = data.content?.map(b => b.text || '').join('') || '';
-
+        if (data.error) { setStatus(false, 'API error: ' + data.error.message); btn.disabled = false; return; }
+        const full = (data.content||[]).map(b=>b.text||'').join('');
         const parts = full.split('---BILLING---');
-        const planText = parts[0].trim();
-        const cptText = parts[1] ? parts[1].trim() : 'No billing data generated.';
-
-        document.getElementById('outputText').textContent = planText;
-        document.getElementById('cptText').textContent = cptText;
-        document.getElementById('outputCard').style.display = 'block';
+        document.getElementById('planText').textContent = parts[0].trim();
+        document.getElementById('billingText').textContent = parts[1] ? parts[1].trim() : '';
+        document.getElementById('planOut').style.display = 'block';
+        document.getElementById('outputActions').style.display = 'flex';
         setStatus(false, '');
       } catch(e) {
-        setStatus(false, 'Error generating plan. Please try again.');
+        setStatus(false, 'Request failed — check your API key and connection.');
       }
       btn.disabled = false;
     }
 
     function clearAll() {
       document.getElementById('assessment').value = '';
-      document.getElementById('outputCard').style.display = 'none';
+      document.getElementById('planOut').style.display = 'none';
+      document.getElementById('outputEmpty').style.display = 'flex';
+      document.getElementById('outputActions').style.display = 'none';
       setStatus(false, '');
     }
 
+    function copyPlan() {
+      navigator.clipboard.writeText(document.getElementById('planText').textContent).then(() => showToast('Plan copied'));
+    }
+
     function copyAll() {
-      const plan = document.getElementById('outputText').textContent;
-      const cpt = document.getElementById('cptText').textContent;
-      navigator.clipboard.writeText(plan + '\n\n---\n' + cpt).then(() => showToast('Copied to clipboard'));
+      const plan = document.getElementById('planText').textContent;
+      const billing = document.getElementById('billingText').textContent;
+      navigator.clipboard.writeText(plan + '\n\n---\n' + billing).then(() => showToast('Copied to clipboard'));
     }
 
     function setStatus(loading, msg) {
       const el = document.getElementById('status');
-      if (loading) {
-        el.innerHTML = '<div class="spinner"></div>' + msg;
-      } else {
-        el.textContent = msg;
-      }
+      el.innerHTML = loading ? '<div class="spinner"></div>' + msg : msg;
     }
 
     function showToast(msg) {
