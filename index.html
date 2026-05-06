@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retina Plan Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f7f7f5;
+      --bg-tertiary: #f0efe9;
+      --bg-info: #e6f1fb;
+      --bg-success: #eaf3de;
+      --bg-danger: #fcebeb;
+      --text: #1a1a18;
+      --text-secondary: #5f5e5a;
+      --text-tertiary: #888780;
+      --text-info: #185fa5;
+      --text-success: #3b6d11;
+      --text-danger: #a32d2d;
+      --border: rgba(0,0,0,0.12);
+      --border-md: rgba(0,0,0,0.22);
+      --border-info: rgba(24,95,165,0.35);
+      --border-success: rgba(59,109,17,0.35);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'Menlo', 'Monaco', 'Courier New', monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1a;
+        --bg-secondary: #252523;
+        --bg-tertiary: #2c2c2a;
+        --bg-info: #0c2a44;
+        --bg-success: #172e08;
+        --bg-danger: #2e1010;
+        --text: #f0efe9;
+        --text-secondary: #b4b2a9;
+        --text-tertiary: #888780;
+        --text-info: #85b7eb;
+        --text-success: #97c459;
+        --text-danger: #f09595;
+        --border: rgba(255,255,255,0.1);
+        --border-md: rgba(255,255,255,0.2);
+        --border-info: rgba(133,183,235,0.3);
+        --border-success: rgba(151,196,89,0.3);
+      }
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-tertiary);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 12px;
+      border: 0.5px solid var(--border-md);
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      color: var(--text);
+      resize: vertical;
+      min-height: 220px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--text-info);
+    }
+
+    textarea::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-md);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    button:hover { background: var(--bg-secondary); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--bg-info);
+      color: var(--text-info);
+      border-color: var(--border-info);
+      font-weight: 500;
+    }
+
+    .btn-primary:hover { opacity: 0.85; background: var(--bg-info); }
+
+    .btn-danger {
+      background: var(--bg-danger);
+      color: var(--text-danger);
+      border-color: rgba(163,45,45,0.3);
+    }
+
+    .mic-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mic-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    .mic-btn.recording {
+      background: var(--bg-danger);
+      color: var(--text-danger);
+      border-color: rgba(163,45,45,0.3);
+    }
+
+    .mic-btn.recording .mic-dot {
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .status {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 10px;
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .spinner {
+      width: 13px;
+      height: 13px;
+      border: 2px solid var(--border-md);
+      border-top-color: var(--text-info);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .output-card {
+      display: none;
+    }
+
+    .output-text {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 0.5px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .copy-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .billing-text {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--bg-success);
+      border: 0.5px solid var(--border-success);
+      border-radius: var(--radius-md);
+      padding: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--text);
+      color: var(--bg);
+      font-size: 13px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Retina Plan Generator</h1>
+      <p>Type or dictate your assessment — get a formatted plan and CPT billing summary</p>
+    </header>
+
+    <div class="card">
+      <div class="section-label">Assessment</div>
+      <textarea id="assessment" placeholder="# AMD&#10;OD wet AMD with active CNV&#10;OS intermediate nonexudative AMD&#10;&#10;# T2DM&#10;- diagnosed 2005&#10;- last A1c 7.3&#10;OD mild NPDR no DME&#10;OS mild NPDR no DME&#10;&#10;# PVD OU&#10;- no breaks on SDE"></textarea>
+      <div class="controls">
+        <button class="mic-btn" id="micBtn" onclick="toggleRecording()">
+          <span class="mic-dot"></span>
+          <span id="micLabel">Record dictation</span>
+        </button>
+        <button class="btn-primary" id="generateBtn" onclick="generate()">Generate plan ↗</button>
+        <button onclick="clearAll()">Clear</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="card output-card" id="outputCard">
+      <div class="section-label">Generated plan</div>
+      <div class="output-text" id="outputText"></div>
+
+      <hr class="divider" />
+
+      <div class="section-label">CPT &amp; billing</div>
+      <div class="billing-text" id="cptText"></div>
+
+      <div class="copy-row">
+        <button onclick="copyAll()">Copy plan + billing</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+
+    const SYSTEM_PROMPT = `You are an expert retina specialist clinical documentation assistant. Your job is to generate a clinical plan section and CPT billing summary from a retina specialist's assessment notes.
+
+PLAN FORMAT RULES — follow exactly:
+- Mirror the assessment diagnoses as headers using #
+- Under each diagnosis, add standard retina counseling and management bullets using the exact style shown
+- At the end, produce a "Plan:" section with action items as bullets, then "Return [timeframe], sooner PRN" on its own line
+- Use these exact standard phrases when applicable (do not deviate):
+  * AMD: "counselled on Amsler monitoring, importance of healthy diet with green vegetables, no smoking"
+  * CNV precautions: "CNV precautions reviewed"
+  * Anti-VEGF injection: "Avastin OD today" or "Avastin OS today" or "Avastin OU today" as appropriate
+  * Injection consent: "RBA reviewed including risk of endophthalmitis, VH, RD"
+  * "Worsening precautions reviewed"
+  * Diabetes: "counselled on importance of tight BP/BG control" and "BP/BG control with PCP"
+  * PVD: "no breaks on SDE" if noted
+  * NPDR without DME: note laterality and severity, no injection needed unless otherwise stated
+- For anti-VEGF, default to Avastin unless another agent is specified
+- Keep the tone and abbreviations consistent with the example (OU, OD, OS, NPDR, DME, CNV, AMD, SDE, RBA, VH, RD, PRN, PCP)
+- Do not add findings not present in the assessment
+- Return interval should be clinically appropriate (e.g., 5 weeks for active CNV, 3-4 months for stable findings)
+
+CPT BILLING RULES:
+After the plan, output a section starting with "---BILLING---" on its own line, then:
+- List all applicable CPT codes with descriptions
+- State the E/M level (99204 or 99205 for new patients) and justify it briefly based on medical decision making (MDM) complexity
+- Note any procedure codes (e.g., 67028 for intravitreal injection, 92250 for fundus photography, 92134 for OCT)
+- Flag if documentation supports the billed level or if any element is missing
+- Use this exact format:
+  CPT codes:
+  [code] — [description]
+
+  E/M level: [code] — [justification 1-2 sentences]
+  
+  Billing note: [any caveats or missing documentation flags]
+
+Output ONLY the plan text and billing section. No preamble, no explanation.`;
+
+    async function toggleRecording() {
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            stream.getTracks().forEach(t => t.stop());
+            setStatus(true, 'Transcribing...');
+            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = async () => {
+              const base64 = reader.result.split(',')[1];
+              try {
+                const res = await fetch('https://api.anthropic.com/v1/messages', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 1000,
+                    messages: [{
+                      role: 'user',
+                      content: [
+                        { type: 'text', text: 'Transcribe this retina specialist clinical dictation exactly as spoken. Return only the transcription, no preamble.' },
+                        { type: 'image', source: { type: 'base64', media_type: 'audio/webm', data: base64 } }
+                      ]
+                    }]
+                  })
+                });
+                const data = await res.json();
+                const transcript = data.content?.map(b => b.text || '').join('') || '';
+                const current = document.getElementById('assessment').value;
+                document.getElementById('assessment').value = current ? current + '\n' + transcript : transcript;
+                setStatus(false, 'Transcription added.');
+              } catch(e) {
+                setStatus(false, 'Transcription failed. Please type your dictation.');
+              }
+            };
+            reader.readAsDataURL(blob);
+          };
+          mediaRecorder.start();
+          isRecording = true;
+          document.getElementById('micBtn').classList.add('recording');
+          document.getElementById('micLabel').textContent = 'Stop recording';
+        } catch(e) {
+          setStatus(false, 'Microphone access denied. Please type your assessment.');
+        }
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById('micBtn').classList.remove('recording');
+        document.getElementById('micLabel').textContent = 'Record dictation';
+        setStatus(false, '');
+      }
+    }
+
+    async function generate() {
+      const assessment = document.getElementById('assessment').value.trim();
+      if (!assessment) { setStatus(false, 'Please enter an assessment first.'); return; }
+
+      const btn = document.getElementById('generateBtn');
+      btn.disabled = true;
+      setStatus(true, 'Generating plan...');
+      document.getElementById('outputCard').style.display = 'none';
+
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            system: SYSTEM_PROMPT,
+            messages: [{ role: 'user', content: assessment }]
+          })
+        });
+        const data = await res.json();
+        const full = data.content?.map(b => b.text || '').join('') || '';
+
+        const parts = full.split('---BILLING---');
+        const planText = parts[0].trim();
+        const cptText = parts[1] ? parts[1].trim() : 'No billing data generated.';
+
+        document.getElementById('outputText').textContent = planText;
+        document.getElementById('cptText').textContent = cptText;
+        document.getElementById('outputCard').style.display = 'block';
+        setStatus(false, '');
+      } catch(e) {
+        setStatus(false, 'Error generating plan. Please try again.');
+      }
+      btn.disabled = false;
+    }
+
+    function clearAll() {
+      document.getElementById('assessment').value = '';
+      document.getElementById('outputCard').style.display = 'none';
+      setStatus(false, '');
+    }
+
+    function copyAll() {
+      const plan = document.getElementById('outputText').textContent;
+      const cpt = document.getElementById('cptText').textContent;
+      navigator.clipboard.writeText(plan + '\n\n---\n' + cpt).then(() => showToast('Copied to clipboard'));
+    }
+
+    function setStatus(loading, msg) {
+      const el = document.getElementById('status');
+      if (loading) {
+        el.innerHTML = '<div class="spinner"></div>' + msg;
+      } else {
+        el.textContent = msg;
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+  </script>
+</body>
+</html>
