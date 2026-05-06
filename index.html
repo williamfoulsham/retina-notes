@@ -501,7 +501,7 @@ Output ONLY the plan and billing. No preamble.`;
                     'anthropic-dangerous-direct-browser-access': 'true'
                   },
                   body: JSON.stringify({
-                    model: 'claude-sonnet-4-20250514',
+                    model: 'claude-sonnet-4-5',
                     max_tokens: 500,
                     messages: [{ role: 'user', content: [
                       { type: 'text', text: 'Transcribe this retina specialist clinical dictation verbatim. Return only the transcription.' },
@@ -564,7 +564,7 @@ Output ONLY the plan and billing. No preamble.`;
             'anthropic-dangerous-direct-browser-access': 'true'
           },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
+            model: 'claude-sonnet-4-5',
             max_tokens: 1000,
             system: SYSTEM_PROMPT,
             messages: [{ role: 'user', content: assessment }]
