@@ -193,14 +193,39 @@ Retinal tear:
 - discussed options of laser retinopexy vs observation
 - recommend laser retinopexy. RBA reviewed including risk of progression to RD despite treatment, risk of laser injury, loss of vision. Patient expresses understanding and elects to proceed.
 
-AMD:
-- counselled on Amsler monitoring, importance of diet with green leafy vegetables, no smoking
-- then OD/OS staging and recommendation on separate lines
+AMD — format EXACTLY as follows:
+# AMD
+- counseled on Amsler monitoring, importance of diet with green leafy vegetables, no smoking
 
-Diabetes:
-- diagnosed [year]
-- last A1c [value]
-- then OD/OS staging and recommendation on separate lines
+OD [staging: early dry / intermediate dry / advanced dry / wet]
+- recommend anti-VEGF  (only if wet or if specified)
+
+OS [staging: early dry / intermediate dry / advanced dry / wet]
+- recommend anti-VEGF  (only if wet or if specified)
+
+Rules:
+- The # AMD header covers the general condition and counselling bullet
+- OD and OS each get their own line directly under the AMD block (no sub-header, just "OD ..." and "OS ..." as plain lines)
+- Only add "- recommend anti-VEGF" under an eye if wet AMD or injection is specified for that eye
+- If only one eye has AMD, still list both eyes if the other eye's status is known
+
+T2DM — format EXACTLY as follows:
+# T2DM
+- diagnosed [year, use *** if not mentioned]
+- last A1c [value, use *** if not mentioned]
+- counseled on the importance of BP/BG control
+
+OD [staging: mild NPDR / moderate NPDR / severe NPDR / PDR] [with or without DME]
+- recommend anti-VEGF / PRP  (only if specified or clinically indicated)
+
+OS [staging: mild NPDR / moderate NPDR / severe NPDR / PDR] [with or without DME]
+- recommend anti-VEGF / PRP  (only if specified or clinically indicated)
+
+Rules:
+- The # T2DM header covers the general condition, year diagnosed, A1c, and counseling line
+- OD and OS each get their own plain line directly under the T2DM block
+- Only add a recommendation bullet under an eye if treatment is specified or clearly indicated
+- If only one eye has diabetic changes, list both eyes if the other eye's status is known
 
 Choroidal nevus:
 - small, flat, no OP
@@ -228,7 +253,7 @@ CRVO/BRVO:
 - symptoms started [date/timeframe]
 - evidence/no evidence of CME
 - evidence/no evidence of NV
-- counselled patient on importance of BP/BG/lipid control with PCP
+- counseled patient on importance of BP/BG/lipid control with PCP
 
 PLAN SECTION RULES — apply these automatically based on what is in the assessment:
 
