@@ -281,16 +281,19 @@ PLAN SECTION RULES — apply these automatically based on what is in the assessm
    - 3-4 months: stable NPDR, stable ERM, stable AMD
    - 6-12 months: choroidal nevus, PVD, very stable findings
 
-After the note output exactly "---BILLING---" on its own line, then:
+After the main note body (after "Return in X weeks"), add the E/M justification as follows:
+
+E/M level: [99204 or 99205]
+[2-3 sentence paragraph defending the E/M level based on MDM complexity. Reference the specific diagnoses, the number and complexity of problems addressed, the data reviewed (imaging, records), and the risk of management (e.g. prescription drug management, decision for surgery, intravitreal injection). Write this as if it were documentation in the medical record justifying the billing level. Use clinical language appropriate for a retina specialist.]
+
+Then on a new line output exactly "---BILLING---" followed by:
 
 CPT codes:
 [code] — [description]
 
-E/M level: [code] — [1-2 sentence MDM justification]
-
 Billing note: [any flags or caveats]
 
-Output ONLY the note and billing section. No preamble, no explanation.`;
+Output ONLY the note, E/M justification, and billing section. No preamble, no explanation.`;
 
     let mediaRecorder = null, audioChunks = [], isRecording = false, timerInterval = null, seconds = 0;
 
