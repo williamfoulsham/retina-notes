@@ -321,6 +321,42 @@ CRVO/BRVO:
 - evidence/no evidence of NV
 - counseled patient on importance of BP/BG/lipid control with PCP
 
+
+Uveitis (intermediate, posterior, panuveitis):
+- location: intermediate / posterior / panuveitis
+- laterality: OD / OS / OU
+- active / inactive
+- findings: vitreous cells/haze, snowballs, snowbanking, CME, chorioretinal lesions as applicable
+- if workup indicated: note relevant investigations ordered
+- if treatment indicated: periocular/intravitreal/systemic as specified
+
+Choroidal detachment:
+- OD / OS / OU
+- extent and characteristics as noted
+- discuss management: observation vs drainage vs medical
+
+Retinitis pigmentosa:
+- OD / OS / OU
+- note visual field status, VA, if applicable
+- counseled on genetic implications and monitoring
+
+Lattice degeneration:
+- OD / OS / OU
+- no breaks / with atrophic holes / with tears
+- treatment recommendation as appropriate
+
+Vitreomacular traction (VMT):
+- OD / OS / OU
+- VA, symptoms noted
+- discuss observation vs ocriplasmin vs PPV
+
+Hydroxychloroquine toxicity screening:
+- current dose and duration noted
+- OCT and VF findings
+- recommend continue / discontinue / reduce dose with rheumatology
+
+For any diagnosis not explicitly listed above, use clinical judgment to generate an appropriately formatted note entry using the same minimal bullet style, and generate an appropriate plan entry.
+
 PLAN SECTION RULES — apply these automatically based on what is in the assessment:
 
 1. If any intravitreal injection is recommended:
@@ -349,15 +385,29 @@ PLAN SECTION RULES — apply these automatically based on what is in the assessm
 
 After the main note body (after "Return in X weeks"), add the E/M justification as follows:
 
-E/M level: [99204 or 99205]
-[2-3 sentence paragraph defending the E/M level based on MDM complexity. Reference the specific diagnoses, the number and complexity of problems addressed, the data reviewed (imaging, records), and the risk of management (e.g. prescription drug management, decision for surgery, intravitreal injection). Write this as if it were documentation in the medical record justifying the billing level. Use clinical language appropriate for a retina specialist.]
+E/M level: [99202 / 99203 / 99204 / 99205]
+[2-3 sentence paragraph defending the E/M level based on MDM complexity for a NEW patient. Use the following thresholds:
+99202: Straightforward MDM — one self-limited or minor problem
+99203: Low complexity — one stable chronic illness, low risk management
+99204: Moderate complexity — one or more chronic illnesses with exacerbation, prescription drug management
+99205: High complexity — one or more chronic illnesses with severe exacerbation or new problem with uncertain prognosis, high risk management (surgery, intensive drug monitoring)
+Reference the specific diagnoses, complexity of problems, data reviewed, and risk of management. Write as medical record documentation.]
 
 Then on a new line output exactly "---BILLING---" followed by:
 
 CPT codes:
 [code] — [description]
 
-Billing note: [any flags or caveats]
+Modifiers:
+- Modifier -25: Suggest if a significant, separately identifiable E/M service was performed on the same day as a procedure (e.g. intravitreal injection, laser). Document that the E/M was above and beyond the pre-procedure assessment.
+- Modifier -57: Suggest if the E/M visit resulted in the decision to perform major surgery (e.g. PPV, scleral buckle) on the same or next day.
+- Modifier -24: Suggest if this is an E/M visit during a post-operative period for a problem unrelated to the original surgery.
+- Modifier -78: Suggest if returning to the OR during the post-operative period for a complication related to the original procedure (e.g. post-PPV endophthalmitis requiring vitreous tap).
+- Modifier -79: Suggest if performing an unrelated procedure during the post-operative period of another procedure.
+- Modifier G2211: Suggest if this visit is part of ongoing, longitudinal care of a complex patient (e.g. wet AMD on chronic anti-VEGF, diabetic retinopathy requiring ongoing management). Not appropriate for straightforward or one-time visits. Cannot be billed with modifier -25.
+Only list modifiers that are relevant to this specific visit. If none apply, omit this section.
+
+Billing note: [any flags, caveats, or documentation requirements]
 
 Output ONLY the note, E/M justification, and billing section. No preamble, no explanation.`;
 
@@ -610,6 +660,42 @@ CPT codes:
 [code] — [description]
 
 Billing note: [any flags or caveats]
+
+
+Uveitis (intermediate, posterior, panuveitis):
+- location: intermediate / posterior / panuveitis
+- laterality: OD / OS / OU
+- active / inactive
+- findings: vitreous cells/haze, snowballs, snowbanking, CME, chorioretinal lesions as applicable
+- if workup indicated: note relevant investigations ordered
+- if treatment indicated: periocular/intravitreal/systemic as specified
+
+Choroidal detachment:
+- OD / OS / OU
+- extent and characteristics as noted
+- discuss management: observation vs drainage vs medical
+
+Retinitis pigmentosa:
+- OD / OS / OU
+- note visual field status, VA, if applicable
+- counseled on genetic implications and monitoring
+
+Lattice degeneration:
+- OD / OS / OU
+- no breaks / with atrophic holes / with tears
+- treatment recommendation as appropriate
+
+Vitreomacular traction (VMT):
+- OD / OS / OU
+- VA, symptoms noted
+- discuss observation vs ocriplasmin vs PPV
+
+Hydroxychloroquine toxicity screening:
+- current dose and duration noted
+- OCT and VF findings
+- recommend continue / discontinue / reduce dose with rheumatology
+
+For any diagnosis not explicitly listed above, use clinical judgment to generate an appropriately formatted note entry using the same minimal bullet style, and generate an appropriate plan entry.
 
 APPLY ALL THE SAME DIAGNOSIS-SPECIFIC FORMAT RULES AND PLAN LOGIC as for new patients, including:
 - T2DM format with diagnosed year (*** if unknown), A1c (*** if unknown), counseled on importance of BP/BG control
