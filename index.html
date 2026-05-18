@@ -252,6 +252,11 @@ GENERAL RULES:
 - Keep everything minimal — match the brevity of the input
 - Do not invent findings not present in the input
 - Use standard abbreviations: OD, OS, OU, AMD, CNV, NPDR, DME, PDR, PVD, ERM, FTMH, CRVO, BRVO, CME, NV, SDE, PRN, PCP, LRP, PRP, PPV, MP, IOI, IOP, VA, CF, HM, LP, RD, VH, RBA, FP, OP, BP, BG
+- If the input contains a social history section labelled "SH:" or "# SH" or "Social history", reproduce it VERBATIM in the note under the heading "# SH" — do not paraphrase, summarise, or alter any wording
+- For any diagnosis involving injections, if the user provides a first injection date and/or most recent injection date, include these as bullets under the relevant eye:
+  "- first [drug] [date]"
+  "- s/p [drug] [date] with [clinical status] ([X] weeks ago)"
+  Calculate weeks by comparing the provided date to TODAY_DATE. Round to nearest whole week.
 
 DIAGNOSIS-SPECIFIC NOTE FORMAT:
 
@@ -270,7 +275,7 @@ OS [staging: early dry / intermediate dry / advanced dry / wet]
 - recommend anti-VEGF  (only if wet or if specified)
 
 Rules:
-- The # AMD header covers the general condition and counselling bullet
+- The # AMD header covers the general condition, imaging review, and counseling bullet
 - OD and OS each get their own line directly under the AMD block (no sub-header, just "OD ..." and "OS ..." as plain lines)
 - Only add "- recommend anti-VEGF" under an eye if wet AMD or injection is specified for that eye
 - If only one eye has AMD, still list both eyes if the other eye's status is known
@@ -281,17 +286,19 @@ T2DM — format EXACTLY as follows:
 - last A1c [value, use *** if not mentioned]
 - counseled on the importance of BP/BG control
 
-OD [staging: mild NPDR / moderate NPDR / severe NPDR / PDR] [with or without DME]
+OD [staging: no diabetic retinopathy / mild NPDR / moderate NPDR / severe NPDR / PDR] [with or without DME]
 - recommend anti-VEGF / PRP  (only if specified or clinically indicated)
 
-OS [staging: mild NPDR / moderate NPDR / severe NPDR / PDR] [with or without DME]
+OS [staging: no diabetic retinopathy / mild NPDR / moderate NPDR / severe NPDR / PDR] [with or without DME]
 - recommend anti-VEGF / PRP  (only if specified or clinically indicated)
 
 Rules:
-- The # T2DM header covers the general condition, year diagnosed, A1c, and counseling line
+- The # T2DM header covers the general condition, imaging review, year diagnosed, A1c, and counseling line
 - OD and OS each get their own plain line directly under the T2DM block
 - Only add a recommendation bullet under an eye if treatment is specified or clearly indicated
 - If only one eye has diabetic changes, list both eyes if the other eye's status is known
+- If a first injection date is provided, include it as: "- first [drug] [date]"
+- If a most recent injection date is provided, include it as: "- s/p [drug] [date] with [clinical status] ([X] weeks ago)" — calculate weeks from the given date to TODAY_DATE
 
 Choroidal nevus:
 - small, flat, no OP
@@ -368,6 +375,9 @@ PLAN SECTION RULES — apply these automatically based on what is in the assessm
    - LRP/PRP OD/OS today
    - RBA reviewed with patient including risk of progression despite treatment, risk of laser injury, risk of loss of vision
 
+2b. If there is any diagnosis of retinal tear, horseshoe tear, retinal hole, or retinal detachment (whether treated or observed):
+   - RD precautions reviewed
+
 3. If there is any history of diabetes, hypertension, or a diagnosis of CRVO or BRVO:
    - BP/BG/lipid control with PCP
    If there is any history of diabetes also add:
@@ -385,13 +395,37 @@ PLAN SECTION RULES — apply these automatically based on what is in the assessm
 
 After the main note body (after "Return in X weeks"), add the E/M justification as follows:
 
-E/M level: [99202 / 99203 / 99204 / 99205]
-[2-3 sentence paragraph defending the E/M level based on MDM complexity for a NEW patient. Use the following thresholds:
+E/M level: [determined as below]
+[IMPORTANT: If the user's input contains "MDM level 3" or "MDM3", bill at 99204 and write the justification accordingly. If the input contains "MDM level 4" or "MDM4", bill at 99205 and write the justification accordingly. Otherwise, determine the level automatically using these thresholds:
 99202: Straightforward MDM — one self-limited or minor problem
 99203: Low complexity — one stable chronic illness, low risk management
 99204: Moderate complexity — one or more chronic illnesses with exacerbation, prescription drug management
 99205: High complexity — one or more chronic illnesses with severe exacerbation or new problem with uncertain prognosis, high risk management (surgery, intensive drug monitoring)
-Reference the specific diagnoses, complexity of problems, data reviewed, and risk of management. Write as medical record documentation.]
+Output as: "E/M level: [code]" followed by a 2-3 sentence paragraph defending the chosen level.
+
+When AMD is present, the justification MUST reference one or more of the following as appropriate:
+- OCTA reviewed and interpreted independently by the treating physician
+- Multimodal imaging reviewed including OCTA and/or fundus photography
+- New or established diagnosis of neovascular AMD representing a chronic condition with high risk of progression
+- Initiation or continuation of anti-VEGF therapy representing prescription drug management with monitoring
+- Independent interpretation of imaging data informing treatment decision
+- Risk of irreversible central vision loss without ongoing treatment
+
+When diabetes/diabetic retinopathy is present, the justification MUST reference one or more of the following as appropriate:
+- OCTA reviewed and interpreted independently by the treating physician
+- Diabetic retinopathy representing a chronic systemic condition with ocular manifestations requiring ongoing specialist management
+- Systemic risk factors reviewed including glycemic control (A1c) and blood pressure
+- Risk of progression to vision-threatening complications including PDR, vitreous hemorrhage, tractional retinal detachment
+- Coordination of care with PCP emphasized regarding glycemic and blood pressure control
+- Prescription drug management via intravitreal injection (if applicable)
+- Patient counseled on critical importance of follow-up given risk of permanent vision loss if lost to follow-up
+
+For all retina patients, also consider referencing:
+- Independent review and interpretation of diagnostic imaging (OCTA, fundus photography, fluorescein angiography if performed)
+- Number and complexity of problems addressed at this encounter
+- High risk of management given potential for irreversible vision loss
+
+Write as medical record documentation in 2-3 sentences. Do not use bullet points in the justification paragraph itself — incorporate these elements naturally into prose.]
 
 Then on a new line output exactly "---BILLING---" followed by:
 
@@ -502,10 +536,12 @@ Output ONLY the note, E/M justification, and billing section. No preamble, no ex
       document.getElementById('planOut').style.display = 'none';
       document.getElementById('outputActions').style.display = 'none';
       try {
+        const todayStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const systemWithDate = SYSTEM_PROMPT.replaceAll('TODAY_DATE', todayStr);
         const res = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-          body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 1500, system: SYSTEM_PROMPT, messages: [{ role: 'user', content: assessment }] })
+          body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 1500, system: systemWithDate, messages: [{ role: 'user', content: assessment }] })
         });
         const data = await res.json();
         if (data.error) { setStatus(false, 'API error: ' + data.error.message); btn.disabled = false; return; }
@@ -645,14 +681,38 @@ Plan:
 
 Return in X weeks
 
-E/M level: [99211–99215]
-[2-3 sentence paragraph defending the E/M level based on MDM complexity for an ESTABLISHED patient visit. Use the following MDM thresholds:
+E/M level: [determined as below]
+[IMPORTANT: If the user's input contains "MDM level 3" or "MDM3", bill at 99214 and write the justification accordingly. If the input contains "MDM level 4" or "MDM4", bill at 99215 and write the justification accordingly. Otherwise, determine the level automatically using these thresholds:
 99211: Minimal — no physician presence required, simple problem
 99212: Straightforward — one self-limited problem, minimal data, minimal risk
 99213: Low complexity — one stable chronic illness or two self-limited problems, low risk management
 99214: Moderate complexity — one or more chronic illnesses with exacerbation or progression, moderate risk (prescription drug management)
 99215: High complexity — one or more chronic illnesses with severe exacerbation, or new problem with uncertain prognosis, high risk management (decision for surgery, drug therapy requiring intensive monitoring)
-Reference the specific diagnoses, the complexity of problems addressed, data reviewed, and risk of management. Write as medical record documentation.]
+Output as: "E/M level: [code]" followed by a 2-3 sentence paragraph defending the chosen level.
+
+When AMD is present, the justification MUST reference one or more of the following as appropriate:
+- OCTA reviewed and interpreted independently by the treating physician
+- Multimodal imaging reviewed including OCTA and/or fundus photography
+- New or established diagnosis of neovascular AMD representing a chronic condition with high risk of progression
+- Initiation or continuation of anti-VEGF therapy representing prescription drug management with monitoring
+- Independent interpretation of imaging data informing treatment decision
+- Risk of irreversible central vision loss without ongoing treatment
+
+When diabetes/diabetic retinopathy is present, the justification MUST reference one or more of the following as appropriate:
+- OCTA reviewed and interpreted independently by the treating physician
+- Diabetic retinopathy representing a chronic systemic condition with ocular manifestations requiring ongoing specialist management
+- Systemic risk factors reviewed including glycemic control (A1c) and blood pressure
+- Risk of progression to vision-threatening complications including PDR, vitreous hemorrhage, tractional retinal detachment
+- Coordination of care with PCP emphasized regarding glycemic and blood pressure control
+- Prescription drug management via intravitreal injection (if applicable)
+- Patient counseled on critical importance of follow-up given risk of permanent vision loss if lost to follow-up
+
+For all retina patients, also consider referencing:
+- Independent review and interpretation of diagnostic imaging (OCTA, fundus photography, fluorescein angiography if performed)
+- Number and complexity of problems addressed at this encounter
+- High risk of management given potential for irreversible vision loss
+
+Write as medical record documentation in 2-3 sentences. Do not use bullet points in the justification paragraph itself — incorporate these elements naturally into prose.]
 
 Then on a new line output exactly "---BILLING---" followed by:
 
@@ -698,6 +758,7 @@ Hydroxychloroquine toxicity screening:
 For any diagnosis not explicitly listed above, use clinical judgment to generate an appropriately formatted note entry using the same minimal bullet style, and generate an appropriate plan entry.
 
 APPLY ALL THE SAME DIAGNOSIS-SPECIFIC FORMAT RULES AND PLAN LOGIC as for new patients, including:
+- If the input contains a social history section labelled "SH:" or "# SH" or "Social history", reproduce it VERBATIM in the note under the heading "# SH" — do not paraphrase, summarise, or alter any wording
 - T2DM format with diagnosed year (*** if unknown), A1c (*** if unknown), counseled on importance of BP/BG control
 - AMD format with OD/OS listed separately under the # AMD header
 - Plan auto-rules: injection → drug + RBA language; laser → LRP/PRP + RBA; diabetes/hypertension/CRVO/BRVO → BP/BG/lipid control with PCP; diabetes → emphasize critical importance of follow-up; all notes → worsening precautions reviewed
@@ -707,13 +768,14 @@ APPLY ALL THE SAME DIAGNOSIS-SPECIFIC FORMAT RULES AND PLAN LOGIC as for new pat
 Output ONLY the note, E/M justification, and billing section. No preamble, no explanation.`;
 
     // ── OPTIMIZE SYSTEM PROMPT ──────────────────────────────────────────────
-    const OPTIMIZE_PROMPT = `You are a medical documentation editor. You will be given a retina specialist clinical note. Your job is to make subtle phrasing variations so the note does not appear to be copied forward from a previous visit, while preserving all clinical content, meaning, and structure exactly.
+    const OPTIMIZE_PROMPT = `You are a medical documentation editor. You will be given a retina specialist clinical note. Your job is to vary both the wording and sentence structure so the note does not appear to be copied forward from a previous visit, while preserving all clinical content and meaning exactly.
 
 RULES:
 - Do NOT change any clinical facts, diagnoses, findings, drug names, laterality, or measurements
-- Do NOT change the overall structure or section headers
-- Make subtle word-level changes only: vary connective phrases, reorder occasional descriptors, use synonymous clinical terms where appropriate (e.g. "noted" vs "identified", "consistent with" vs "in keeping with", "recommended" vs "advised")
-- The E/M justification paragraph should be rephrased while making the same clinical argument
+- Do NOT change the overall structure or section headers (# headings, Plan:, E/M level:, Return in X weeks)
+- Vary BOTH word choice AND sentence structure: reorder clauses, restructure bullet points, combine or split sentences where natural, vary the order of details within a bullet where clinically equivalent
+- Use synonymous clinical terms freely (e.g. "noted" / "identified" / "observed" / "demonstrated", "consistent with" / "in keeping with" / "suggestive of", "recommended" / "advised" / "discussed", "counseled" / "educated", "proceeding with" / "plan to proceed with")
+- Vary the E/M justification paragraph substantially — same clinical argument, different sentence construction
 - The billing section after ---BILLING--- should remain completely unchanged
 - Output the full note with the same sections in the same order
 - No preamble, no explanation, no markup`;
@@ -806,10 +868,12 @@ RULES:
       document.getElementById('estPlanOut').style.display = 'none';
       document.getElementById('estOutputActions').style.display = 'none';
       try {
+        const todayStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const estSystemWithDate = EST_SYSTEM_PROMPT.replaceAll('TODAY_DATE', todayStr);
         const res = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-          body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 1500, system: EST_SYSTEM_PROMPT, messages: [{ role: 'user', content: assessment }] })
+          body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 1500, system: estSystemWithDate, messages: [{ role: 'user', content: assessment }] })
         });
         const data = await res.json();
         if (data.error) { setEstStatus(false, 'API error: ' + data.error.message); btn.disabled = false; return; }
